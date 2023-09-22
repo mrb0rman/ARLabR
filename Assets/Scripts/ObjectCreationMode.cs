@@ -9,6 +9,7 @@ public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
     [SerializeField] private GameObject _targetMarkerPrefab;
 
     private int _spawnedObjectType = -1;
+    private int _spawnObjectCount = 0;
     private GameObject _targetMarker;
     
 
@@ -94,5 +95,12 @@ public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
             position: InteractionManager.Instance.GetARRaycastHits(touch.position)[0].pose.position,
             rotation: _spawnedObjectPrefabs[_spawnedObjectType].transform.rotation
         );
+
+        CreatedObject objectDescription = obj.GetComponent<CreatedObject>();
+        if(objectDescription == null)
+        {
+            throw new MissingComponentException("[OBJECT_CREATION_MODE] " + obj.name + " missing CreatedObject!");
+        }
+        objectDescription.GiveNumber(++_spawnObjectCount);
     }
 }

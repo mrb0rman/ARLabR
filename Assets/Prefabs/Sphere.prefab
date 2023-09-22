@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1049112277334632218}
   - component: {fileID: 6947644392618243120}
   - component: {fileID: 4095725391827378300}
+  - component: {fileID: 325304976455863099}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -97,3 +98,17 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &325304976455863099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2871597754751775124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 487454df1c2e0f64e9038f17a3ad75c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _displayName: Green sphere
+  _description: Green sphere

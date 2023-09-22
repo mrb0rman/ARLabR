@@ -8,7 +8,15 @@ using UnityEngine.XR.ARSubsystems;
 [RequireComponent(typeof(ARRaycastManager))]
 public class InteractionManager : MonoBehaviour
 {
+
     [SerializeField] private GameObject[] _modeObjects;
+    private Camera _arCamera;
+    public Camera ARCamera {
+        get { 
+            return _arCamera; 
+        }
+    }
+
     private IInteractionManagerMode[] _modes;
     private IInteractionManagerMode _currentMode = null;
 
@@ -63,6 +71,11 @@ public class InteractionManager : MonoBehaviour
 
     private void Start()
     {
+        // get camera in children
+        _arCamera = GetComponentInChildren<Camera>();
+        if (!_arCamera)
+            throw new MissingComponentException("[INTERACTION_MANAGER] Camera not found in children of Interaction manager!");
+
         // reset current screen
         ReturnToDefaultMode();
         UpdateModes();
