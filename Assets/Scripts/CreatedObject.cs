@@ -26,6 +26,7 @@ public class CreatedObject : MonoBehaviour
     }
 
     public Material MTMaterial => _material;
+    public Material DefaultMaterial;
     
     [SerializeField] private string _displayName;
     [SerializeField] private string _description;

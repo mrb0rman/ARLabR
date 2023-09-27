@@ -9,6 +9,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
     [SerializeField] private GameObject _descriptionPanel;
     [SerializeField] private TMP_Text _objectTitleText;
     [SerializeField] private TMP_Text _objectDescriptionText;
+    [SerializeField] private ObjectCreationMode _objectCreationMode;
 
     public void Activate()
     {
@@ -20,6 +21,8 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
     {
         _descriptionPanel.SetActive(false);
         _ui.SetActive(false);
+
+        CancelingSelection();
     }
 
     public void BackToDefaultScreen()
@@ -59,6 +62,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
             throw new MissingComponentException("[OBJECT_SELECTION_MODE] " + selectedObject.name + " has no description!");
 
         ShowObjectDescription(objectDescription);
+        ObjectSelection(objectDescription);
     }
 
     private void ShowObjectDescription(CreatedObject targetObject)
@@ -66,5 +70,38 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
         _objectTitleText.text = targetObject.Name;
         _objectDescriptionText.text = targetObject.Description;
         _descriptionPanel.SetActive(true);
+    }
+
+    private void ObjectSelection(CreatedObject targetObject)
+    {
+        foreach (var createdObject in _objectCreationMode.ListCreatedObject)
+        {
+            var currentColor = createdObject.MTMaterial.color;
+            if (targetObject.Name != createdObject.Name)
+            {
+                currentColor = new Color(0,0,0, 0.1f);
+            }
+            else
+            {
+                currentColor = new Color(createdObject.DefaultMaterial.color.r
+                    , createdObject.DefaultMaterial.color.g
+                    , createdObject.DefaultMaterial.color.b
+                    , 1f);
+            }
+            createdObject.MTMaterial.color = currentColor;
+        }
+    }
+
+    private void CancelingSelection()
+    {
+        foreach (var createdObject in _objectCreationMode.ListCreatedObject)
+        {
+            var currentColor = createdObject.MTMaterial.color;
+            currentColor = new Color(createdObject.DefaultMaterial.color.r
+                , createdObject.DefaultMaterial.color.g
+                , createdObject.DefaultMaterial.color.b
+                , 1f);
+            createdObject.MTMaterial.color = currentColor;
+        }
     }
 }
