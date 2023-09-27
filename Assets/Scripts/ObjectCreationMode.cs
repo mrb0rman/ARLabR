@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
 {
+    public List<CreatedObject> _listCreatedObject = new List<CreatedObject>();
+    
     [SerializeField] private GameObject[] _spawnedObjectPrefabs;
     [SerializeField] private GameObject _ui;
     [SerializeField] private GameObject _targetMarkerPrefab;
@@ -102,5 +104,7 @@ public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
             throw new MissingComponentException("[OBJECT_CREATION_MODE] " + obj.name + " missing CreatedObject!");
         }
         objectDescription.GiveNumber(++_spawnObjectCount);
+        
+        _listCreatedObject.Add(objectDescription);
     }
 }

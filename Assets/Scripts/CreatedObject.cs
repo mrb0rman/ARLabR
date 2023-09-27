@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class CreatedObject : MonoBehaviour
 {
-    [SerializeField] private string _displayName;
-    [SerializeField] private string _description;
-
     private int _number = -1;
 
     public string Name {
@@ -28,8 +25,15 @@ public class CreatedObject : MonoBehaviour
         }
     }
 
+    public Material MTMaterial => _material;
+    
+    [SerializeField] private string _displayName;
+    [SerializeField] private string _description;
+    [SerializeField] private Material _material;
     public void GiveNumber(int number)
     {
         _number = number;
     }
+    
+    
 }
