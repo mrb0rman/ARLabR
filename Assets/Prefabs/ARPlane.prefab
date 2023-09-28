@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1812189161706453520}
   m_Layer: 0
   m_Name: ARPlane
-  m_TagString: Untagged
+  m_TagString: ARPlane
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -217,7 +217,7 @@ LineRenderer:
       atime5: 0
       atime6: 0
       atime7: 0
-      m_Mode: 0
+      m_Mode: 1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 4

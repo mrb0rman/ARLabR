@@ -23,6 +23,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
         _ui.SetActive(false);
 
         CancelingSelection();
+        IncreasedVisibilityPlane();
     }
 
     public void BackToDefaultScreen()
@@ -62,6 +63,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
             throw new MissingComponentException("[OBJECT_SELECTION_MODE] " + selectedObject.name + " has no description!");
 
         ShowObjectDescription(objectDescription);
+        DecreasedVisibilityPlane();
         ObjectSelection(objectDescription);
     }
 
@@ -76,19 +78,24 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
     {
         foreach (var createdObject in _objectCreationMode.ListCreatedObject)
         {
-            var currentColor = createdObject.MTMaterial.color;
+            var currentColor = createdObject.Renderer.material.color;
+            var heading = targetObject.transform.position - createdObject.transform.position;
             if (targetObject.Name != createdObject.Name)
             {
-                currentColor = new Color(0,0,0, 0.1f);
+                currentColor = new Color(0, 0, 0, 0.2f);
+
+                var rot = new Quaternion();
+                rot.SetLookRotation(heading, Vector3.up);
+                createdObject.ParticleSystem.transform.localRotation = rot;
+
+                createdObject.ParticleSystem.Play();
             }
             else
             {
-                currentColor = new Color(createdObject.DefaultMaterial.color.r
-                    , createdObject.DefaultMaterial.color.g
-                    , createdObject.DefaultMaterial.color.b
-                    , 1f);
+                currentColor = createdObject.DefaultMaterial.color;
+                createdObject.ParticleSystem.Stop();
             }
-            createdObject.MTMaterial.color = currentColor;
+            createdObject.Renderer.material.color = currentColor;
         }
     }
 
@@ -96,12 +103,39 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
     {
         foreach (var createdObject in _objectCreationMode.ListCreatedObject)
         {
-            var currentColor = createdObject.MTMaterial.color;
-            currentColor = new Color(createdObject.DefaultMaterial.color.r
-                , createdObject.DefaultMaterial.color.g
-                , createdObject.DefaultMaterial.color.b
+            createdObject.Renderer.material.color = createdObject.DefaultMaterial.color;
+            createdObject.ParticleSystem.Stop();
+        }
+    }
+    private void DecreasedVisibilityPlane()
+    {
+        var planes = GameObject.FindGameObjectsWithTag("ARPlane");
+        foreach(var plane in planes)
+        {
+            plane.GetComponent<Renderer>().material.color = new Color(plane.GetComponent<Renderer>().material.color.r
+                , plane.GetComponent<Renderer>().material.color.g
+                , plane.GetComponent<Renderer>().material.color.b
+                , 0.1f);
+            plane.GetComponent<LineRenderer>().material.color = new Color(plane.GetComponent<LineRenderer>().material.color.r
+                , plane.GetComponent<LineRenderer>().material.color.g
+                , plane.GetComponent<LineRenderer>().material.color.b
+                , 0f);
+        }
+    }
+
+    private void IncreasedVisibilityPlane()
+    {
+        var planes = GameObject.FindGameObjectsWithTag("ARPlane");
+        foreach (var plane in planes)
+        {
+            plane.GetComponent<Renderer>().material.color = new Color(plane.GetComponent<Renderer>().material.color.r
+                , plane.GetComponent<Renderer>().material.color.g
+                , plane.GetComponent<Renderer>().material.color.b
+                , 0.4f);
+            plane.GetComponent<LineRenderer>().material.color = new Color(plane.GetComponent<LineRenderer>().material.color.r
+                , plane.GetComponent<LineRenderer>().material.color.g
+                , plane.GetComponent<LineRenderer>().material.color.b
                 , 1f);
-            createdObject.MTMaterial.color = currentColor;
         }
     }
 }

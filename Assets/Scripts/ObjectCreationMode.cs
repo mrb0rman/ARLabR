@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
 {
-    public List<CreatedObject> ListCreatedObject = new List<CreatedObject>();
+    [HideInInspector] public List<CreatedObject> ListCreatedObject = new List<CreatedObject>();
     
     [SerializeField] private GameObject[] _spawnedObjectPrefabs;
     [SerializeField] private GameObject _ui;
@@ -98,13 +98,12 @@ public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
             rotation: _spawnedObjectPrefabs[_spawnedObjectType].transform.rotation
         );
 
-        CreatedObject objectDescription = obj.GetComponent<CreatedObject>();
+        var objectDescription = obj.GetComponent<CreatedObject>();
         if(objectDescription == null)
         {
             throw new MissingComponentException("[OBJECT_CREATION_MODE] " + obj.name + " missing CreatedObject!");
         }
         objectDescription.GiveNumber(++_spawnObjectCount);
-        objectDescription.DefaultMaterial = objectDescription.MTMaterial;
             
         ListCreatedObject.Add(objectDescription);
     }

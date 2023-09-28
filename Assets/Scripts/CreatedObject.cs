@@ -25,12 +25,13 @@ public class CreatedObject : MonoBehaviour
         }
     }
 
-    public Material MTMaterial => _material;
+    public Renderer Renderer => _renderer;
     public Material DefaultMaterial;
+    public ParticleSystem ParticleSystem;
     
     [SerializeField] private string _displayName;
     [SerializeField] private string _description;
-    [SerializeField] private Material _material;
+    [SerializeField] private Renderer _renderer;
     public void GiveNumber(int number)
     {
         _number = number;
