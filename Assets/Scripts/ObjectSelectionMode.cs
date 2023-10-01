@@ -116,10 +116,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
                 , plane.GetComponent<Renderer>().material.color.g
                 , plane.GetComponent<Renderer>().material.color.b
                 , 0.1f);
-            plane.GetComponent<LineRenderer>().material.color = new Color(plane.GetComponent<LineRenderer>().material.color.r
-                , plane.GetComponent<LineRenderer>().material.color.g
-                , plane.GetComponent<LineRenderer>().material.color.b
-                , 0f);
+            plane.GetComponent<LineRenderer>().startWidth = 0f;
         }
     }
 
@@ -132,10 +129,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
                 , plane.GetComponent<Renderer>().material.color.g
                 , plane.GetComponent<Renderer>().material.color.b
                 , 0.4f);
-            plane.GetComponent<LineRenderer>().material.color = new Color(plane.GetComponent<LineRenderer>().material.color.r
-                , plane.GetComponent<LineRenderer>().material.color.g
-                , plane.GetComponent<LineRenderer>().material.color.b
-                , 1f);
+            plane.GetComponent<LineRenderer>().startWidth = 0f;
         }
     }
 }
