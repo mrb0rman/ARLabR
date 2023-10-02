@@ -129,7 +129,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
                 , plane.GetComponent<Renderer>().material.color.g
                 , plane.GetComponent<Renderer>().material.color.b
                 , 0.4f);
-            plane.GetComponent<LineRenderer>().startWidth = 0f;
+            plane.GetComponent<LineRenderer>().startWidth = 0.05f;
         }
     }
 }
