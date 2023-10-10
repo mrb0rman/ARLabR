@@ -8,7 +8,6 @@ using UnityEngine.XR.ARSubsystems;
 [RequireComponent(typeof(ARRaycastManager))]
 public class InteractionManager : MonoBehaviour
 {
-
     [SerializeField] private GameObject[] _modeObjects;
     private Camera _arCamera;
     public Camera ARCamera {

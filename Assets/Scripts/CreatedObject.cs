@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class CreatedObject : MonoBehaviour
 {
+    public Rigidbody Rigidbody => rigidbody;
+    
+    [SerializeField] private Rigidbody rigidbody;
+    
     [SerializeField] private string _displayName;
     [SerializeField] private string _description;
 

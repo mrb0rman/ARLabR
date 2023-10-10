@@ -1,25 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
+using Lean.Touch;
 using TMPro;
 using UnityEngine;
 
 public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
 {
+    [Tooltip("UI objects to disable")]
     [SerializeField] private GameObject _ui;
     [SerializeField] private GameObject _descriptionPanel;
     [SerializeField] private TMP_Text _objectTitleText;
     [SerializeField] private TMP_Text _objectDescriptionText;
+    
+    [SerializeField] private float m_Thrust;
+    [SerializeField] private ObjectCreationMode objectCreationMode;
+
+    private CreatedObject _selectedObject = null;
+    private bool _needResetTouch = false;
 
     public void Activate()
     {
         _ui.SetActive(true);
         _descriptionPanel.SetActive(false);
+        _selectedObject = null;
     }
 
     public void Deactivate()
     {
         _descriptionPanel.SetActive(false);
         _ui.SetActive(false);
+        _selectedObject = null;
     }
 
     public void BackToDefaultScreen()
@@ -31,16 +39,76 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
     {
         Touch touch = touches[0];
         bool overUI = touch.position.IsPointOverUIObject();
+        Debug.Log("TouchInteraction " + touch.position);
 
-        if (touch.phase == TouchPhase.Began)
+        // this is added due to the fact that when we selected an object, we don't want to manipulate it immediately
+        // we will wait until first touch becomes Ended or Canceled, then touch interactions will work properly
+        if (_needResetTouch)
         {
-            if (!overUI)
+            if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                _needResetTouch = false;
+            else
+                return;
+        }
+
+        if (_selectedObject == null)
+        {
+            if (touch.phase != TouchPhase.Began || overUI)
+                return;
+
+            TrySelectObject(touch.position);
+            _needResetTouch = true;
+        }
+        else
+        {
+            // if there is a selected object, our logic changes according to the number of touches
+            // if we touch screen with one finger, it's movement
+            if (touches.Length == 1)
             {
-                TrySelectObject(touch.position);
+                MoveSelectedObject(touch);
+            }
+            // if we touch screen with two fingers, it's rotation
+            else if (touches.Length == 2)
+            {
+                RotateSelectedObject(touch, touches[1]);
+            }
+        }
+    }
+    
+    public void OnDoubleClickEvent()
+    {
+        //var hitPosition = InteractionManager.Instance.GetARRaycastHits(LeanTouch.Fingers[0].ScreenPosition)[0].pose.position;
+        
+        if (objectCreationMode.ListCreatedObject.Count > 0)
+        {
+            foreach (var createdObject in objectCreationMode.ListCreatedObject)
+            {
+                //var direction = createdObject.gameObject.transform.position - hitPosition;
+                //createdObject.Rigidbody.AddForce(m_Thrust*direction, ForceMode.Impulse);
+            }
+        }
+        
+        //var touchPosition = LeanTouch.Fingers[0].GetWorldPosition(0);
+        //InteractionManager.Instance.GetARRaycastHits(touch.position)[0].pose.position;
+    }
+
+    public void OnSwipeEvent()
+    {
+        if (objectCreationMode.ListCreatedObject.Count > 0)
+        {
+            foreach (var createdObject in objectCreationMode.ListCreatedObject)
+            {
+                //var direction = new Vector3(,,createdObject.gameObject.transform.position.z);
+                //createdObject.Rigidbody.AddForce(m_Thrust*direction, ForceMode.Impulse);
             }
         }
     }
 
+    public void OnReturnObjectEvent()
+    {
+        
+    }
+    
     private void TrySelectObject(Vector2 pos)
     {
         // fire a ray from camera to the target screen position
@@ -54,11 +122,11 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
 
         // if we hit a spawned object tag, try to get info from it
         GameObject selectedObject = hitObject.collider.gameObject;
-        CreatedObject objectDescription = selectedObject.GetComponent<CreatedObject>();
-        if (!objectDescription)
+        _selectedObject = selectedObject.GetComponent<CreatedObject>();
+        if (!_selectedObject)
             throw new MissingComponentException("[OBJECT_SELECTION_MODE] " + selectedObject.name + " has no description!");
 
-        ShowObjectDescription(objectDescription);
+        ShowObjectDescription(_selectedObject);
     }
 
     private void ShowObjectDescription(CreatedObject targetObject)
@@ -67,4 +135,31 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
         _objectDescriptionText.text = targetObject.Description;
         _descriptionPanel.SetActive(true);
     }
+
+    private void MoveSelectedObject(Touch touch)
+    {
+        if (touch.phase != TouchPhase.Moved)
+            return;
+
+        _selectedObject.transform.position = InteractionManager.Instance.GetARRaycastHits(touch.position)[0].pose.position;
+    }
+
+    private void RotateSelectedObject(Touch touch1, Touch touch2)
+    {
+        if (touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved)
+        {
+            float distance = Vector2.Distance(touch1.position, touch2.position);
+            float distancePrev = Vector2.Distance(touch1.position - touch1.deltaPosition, touch2.position - touch2.deltaPosition);
+            float delta = distance - distancePrev;
+
+            if (Mathf.Abs(delta) > 0.0f)
+                delta *= 0.1f;
+            else
+                delta *= -0.1f;
+
+            // when you want to rotate object by angle, multiply its quaternion-type rotation by a rotation angle quaternion
+            _selectedObject.transform.rotation *= Quaternion.Euler(0.0f, delta, 0.0f);
+        }
+    }
+    
 }
