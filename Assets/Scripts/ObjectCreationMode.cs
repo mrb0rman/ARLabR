@@ -98,6 +98,8 @@ public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
             rotation: _spawnedObjectPrefabs[_spawnedObjectType].transform.rotation
         );
 
+        obj.transform.position += new Vector3(0,0.5f,0);
+
         CreatedObject objectDescription = obj.GetComponent<CreatedObject>();
         if(objectDescription == null)
         {

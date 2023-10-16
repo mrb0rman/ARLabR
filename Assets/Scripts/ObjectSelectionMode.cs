@@ -9,8 +9,12 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
     [SerializeField] private GameObject _descriptionPanel;
     [SerializeField] private TMP_Text _objectTitleText;
     [SerializeField] private TMP_Text _objectDescriptionText;
-    
-    [SerializeField] private float m_Thrust;
+
+    [SerializeField] private float explosionDistance = 1;
+    [SerializeField] private float forceImpulseDoubleClick = 2;
+    [SerializeField] private float forceImpulseSwipe = 2;
+    [SerializeField] private float forceImpulseReturn = 1;
+
     [SerializeField] private ObjectCreationMode objectCreationMode;
 
     private CreatedObject _selectedObject = null;
@@ -21,6 +25,8 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
         _ui.SetActive(true);
         _descriptionPanel.SetActive(false);
         _selectedObject = null;
+
+        LeanTouch.OnFingerSwipe += OnSwipeEvent;
     }
 
     public void Deactivate()
@@ -28,6 +34,8 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
         _descriptionPanel.SetActive(false);
         _ui.SetActive(false);
         _selectedObject = null;
+
+        LeanTouch.OnFingerSwipe -= OnSwipeEvent;
     }
 
     public void BackToDefaultScreen()
@@ -65,50 +73,74 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
             // if we touch screen with one finger, it's movement
             if (touches.Length == 1)
             {
-                MoveSelectedObject(touch);
+                //MoveSelectedObject(touch);
             }
             // if we touch screen with two fingers, it's rotation
             else if (touches.Length == 2)
             {
-                RotateSelectedObject(touch, touches[1]);
+                //RotateSelectedObject(touch, touches[1]);
             }
         }
     }
     
     public void OnDoubleClickEvent()
     {
-        //var hitPosition = InteractionManager.Instance.GetARRaycastHits(LeanTouch.Fingers[0].ScreenPosition)[0].pose.position;
+        var hitPosition = InteractionManager.Instance.GetARRaycastHits(LeanTouch.Fingers[0].ScreenPosition)[0].pose.position;
         
         if (objectCreationMode.ListCreatedObject.Count > 0)
         {
             foreach (var createdObject in objectCreationMode.ListCreatedObject)
             {
-                //var direction = createdObject.gameObject.transform.position - hitPosition;
-                //createdObject.Rigidbody.AddForce(m_Thrust*direction, ForceMode.Impulse);
+                var direction = createdObject.gameObject.transform.position - hitPosition;
+                if(direction.magnitude <= explosionDistance)
+                {
+                    createdObject.Rigidbody.AddForce(forceImpulseDoubleClick * direction, ForceMode.Impulse);
+                }
             }
         }
-        
-        //var touchPosition = LeanTouch.Fingers[0].GetWorldPosition(0);
-        //InteractionManager.Instance.GetARRaycastHits(touch.position)[0].pose.position;
     }
 
-    public void OnSwipeEvent()
+    public void OnSwipeEvent(LeanFinger finger)
     {
-        if (objectCreationMode.ListCreatedObject.Count > 0)
+        if(LeanTouch.Fingers.Count < 2)
         {
-            foreach (var createdObject in objectCreationMode.ListCreatedObject)
+            var directionSwipe = finger.SwipeScreenDelta;
+
+            directionSwipe.Normalize();
+
+            var direction = new Vector3(directionSwipe.x, 0, directionSwipe.y);
+            if (objectCreationMode.ListCreatedObject.Count > 0)
             {
-                //var direction = new Vector3(,,createdObject.gameObject.transform.position.z);
-                //createdObject.Rigidbody.AddForce(m_Thrust*direction, ForceMode.Impulse);
+                foreach (var createdObject in objectCreationMode.ListCreatedObject)
+                {
+                    createdObject.Rigidbody.AddForce(forceImpulseSwipe * direction, ForceMode.Impulse);
+                }
             }
         }
-    }
+        else
+        {
+            var fingers = LeanTouch.Fingers;
+            var distance = Vector2.Distance(fingers[0].ScreenPosition, fingers[1].ScreenPosition);
+            var distancePrev = Vector2.Distance(fingers[0].StartScreenPosition - fingers[0].ScreenPosition, fingers[1].StartScreenPosition - fingers[1].ScreenPosition);
+            float delta = distance - distancePrev;
 
-    public void OnReturnObjectEvent()
-    {
+            if (delta < 0.0f)
+            {
+                var center = new Vector2(Mathf.Abs(fingers[0].StartScreenPosition.x - fingers[0].ScreenPosition.x), Mathf.Abs(fingers[0].StartScreenPosition.y - fingers[0].ScreenPosition.y));
+                var hitPosition = InteractionManager.Instance.GetARRaycastHits(center)[0].pose.position;
+                if (objectCreationMode.ListCreatedObject.Count > 0)
+                {
+                    foreach (var createdObject in objectCreationMode.ListCreatedObject)
+                    {
+                        var direction = hitPosition - createdObject.gameObject.transform.position;
+                        createdObject.Rigidbody.AddForce(forceImpulseReturn * direction, ForceMode.Impulse);
+                    }
+                }
+            }
+        }
         
     }
-    
+
     private void TrySelectObject(Vector2 pos)
     {
         // fire a ray from camera to the target screen position
