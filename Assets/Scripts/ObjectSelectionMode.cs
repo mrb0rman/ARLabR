@@ -126,7 +126,16 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
 
             if (delta < 0.0f)
             {
-                var center = new Vector2(Mathf.Abs(fingers[0].StartScreenPosition.x - fingers[0].ScreenPosition.x), Mathf.Abs(fingers[0].StartScreenPosition.y - fingers[0].ScreenPosition.y));
+                Vector2 center = Vector2.zero;
+                for (int i = 0; i < 2; ++i)
+                {
+                    center.x += fingers[i].ScreenPosition.x;
+                    center.y += fingers[i].ScreenPosition.y;
+                }
+
+                center.x /= 2;
+                center.y /= 2;
+                
                 var hitPosition = InteractionManager.Instance.GetARRaycastHits(center)[0].pose.position;
                 if (objectCreationMode.ListCreatedObject.Count > 0)
                 {
