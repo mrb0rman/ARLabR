@@ -102,7 +102,7 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
 
     public void OnSwipeEvent(LeanFinger finger)
     {
-        if(LeanTouch.Fingers.Count < 2)
+        if(LeanTouch.Fingers.Count == 1)
         {
             var directionSwipe = finger.SwipeScreenDelta;
 
