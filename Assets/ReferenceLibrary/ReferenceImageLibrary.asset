@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 848409ee8ba454f42a5ddff137688a27, type: 3}
+  m_Name: ReferenceImageLibrary
+  m_EditorClassIdentifier: 
+  m_GuidLow: 5507609218556211948
+  m_GuidHigh: 4084844704868598716
+  m_DataStore:
+    m_Storage: []
+  m_Images:
+  - m_SerializedGuid:
+      m_GuidLow: 4775211696226131344
+      m_GuidHigh: 448075089884084119
+    m_SerializedTextureGuid:
+      m_GuidLow: 7225539695984412416
+      m_GuidHigh: 17734660180309308986
+    m_Size: {x: 0.13192634, y: 0.198}
+    m_SpecifySize: 1
+    m_Name: AgileIMG
+    m_Texture: {fileID: 0}
+  - m_SerializedGuid:
+      m_GuidLow: 4806089969348080948
+      m_GuidHigh: 7868946390316202428
+    m_SerializedTextureGuid:
+      m_GuidLow: 10678904753461289493
+      m_GuidHigh: 16158649603235220937
+    m_Size: {x: 0.14049011, y: 0.205}
+    m_SpecifySize: 1
+    m_Name: HarryPotterIMG
+    m_Texture: {fileID: 0}

@@ -1,5 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
 {
@@ -99,10 +104,22 @@ public class ObjectSelectionMode : MonoBehaviour, IInteractionManagerMode
 
     private void MoveSelectedObject(Touch touch)
     {
-        if (touch.phase != TouchPhase.Moved)
+        if (touch.phase == TouchPhase.Began)
+        {
+            ARAnchor anchor = _selectedObject.GetComponent<ARAnchor>();
+            if (anchor != null)
+                Destroy(anchor);
             return;
-
-        _selectedObject.transform.position = InteractionManager.Instance.GetARRaycastHits(touch.position)[0].pose.position;
+        }
+        else if (touch.phase == TouchPhase.Ended)
+        {
+            _selectedObject.AddComponent<ARAnchor>();
+            return;
+        }
+        else if (touch.phase == TouchPhase.Moved)
+        {
+            _selectedObject.transform.position = InteractionManager.Instance.GetARRaycastHits(touch.position)[0].pose.position;
+        }
     }
 
     private void RotateSelectedObject(Touch touch1, Touch touch2)

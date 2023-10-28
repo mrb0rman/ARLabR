@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
 
 public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
 {
@@ -9,9 +10,8 @@ public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
     [SerializeField] private GameObject _targetMarkerPrefab;
 
     private int _spawnedObjectType = -1;
-    private int _spawnObjectCount = 0;
+    private int _spawnedObjectCount = 0;
     private GameObject _targetMarker;
-    
 
     private void Start()
     {
@@ -84,23 +84,22 @@ public class ObjectCreationMode : MonoBehaviour, IInteractionManagerMode
 
     private void MoveMarker(Vector2 touchPosition)
     {
-
         _targetMarker.transform.position = InteractionManager.Instance.GetARRaycastHits(touchPosition)[0].pose.position;
     }
 
     private void SpawnObject(Touch touch)
     {
-        var obj = Instantiate(
+        GameObject newObject = Instantiate(
             original: _spawnedObjectPrefabs[_spawnedObjectType],
             position: InteractionManager.Instance.GetARRaycastHits(touch.position)[0].pose.position,
             rotation: _spawnedObjectPrefabs[_spawnedObjectType].transform.rotation
         );
 
-        CreatedObject objectDescription = obj.GetComponent<CreatedObject>();
-        if(objectDescription == null)
-        {
-            throw new MissingComponentException("[OBJECT_CREATION_MODE] " + obj.name + " missing CreatedObject!");
-        }
-        objectDescription.GiveNumber(++_spawnObjectCount);
+        CreatedObject objectDescription = newObject.GetComponent<CreatedObject>();
+        if (objectDescription == null)
+            throw new MissingComponentException("[OBJECT_CREATION_MODE] " + newObject.name + " missing CreatedObject!");
+        objectDescription.GiveNumber(++_spawnedObjectCount);
+
+        newObject.AddComponent<ARAnchor>();
     }
 }
