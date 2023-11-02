@@ -7,7 +7,7 @@ using UnityEngine.XR.ARFoundation;
 public class GameMode : MonoBehaviour, IInteractionManagerMode
 {
     private const int _startTime = 60;
-
+    [SerializeField] private ARPlaneManager _aRPlaneManager;
     [SerializeField] private GameObject _ui;
     [SerializeField] private TMP_Text _timeText;
     [SerializeField] private TMP_Text _infoText;
@@ -83,7 +83,6 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
         _timeText.text = _currentTime.ToString();
         score = 0;
         StartCoroutine(Tick());
-        StartCoroutine(SpawnTick());
     }
 
     public void RestartGame()
@@ -111,31 +110,28 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
         }
         EndGame();
     }
-
-    private IEnumerator SpawnTick()
-    {
-        while(_listObject.Count < 13)
-        {
-            SpawnObject();
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
     
     private void TimeDecrease()
     {
         _currentTime--;
         _timeText.text = _currentTime.ToString();
     }
-
+    
     private void SpawnObject()
     {
+        var plane = GetRandomARPlane();
+        
         var form = gameCreatedObjects[_listObject.Count];
         form.IsUse = true;
-
+        
         var newObject = Instantiate(
             form.gameObject, 
-            new Vector3(Random.Range(-12, 12), Random.Range(-12, 12), Random.Range(-12, 12)), 
-            Quaternion.Euler(Random.Range(0, 359), Random.Range(0, 359), Random.Range(0, 359)));
+            new Vector3(plane.center.x + Random.Range(-plane.size.x, plane.size.x), 
+                plane.center.y + Random.Range(-plane.size.y, plane.size.y), 
+                plane.center.z), 
+            Quaternion.Euler(Random.Range(0, 359), 
+                Random.Range(0, 359), 
+                Random.Range(0, 359)));
         
         newObject.AddComponent<ARAnchor>();
 
@@ -164,5 +160,21 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
             Destroy(item.gameObject);
         }
         _listObject.Clear();
+    }
+
+    private ARPlane GetRandomARPlane()
+    {
+        var arplaneCollection = _aRPlaneManager.trackables;
+        int number = Random.Range(0, arplaneCollection.count);
+        
+        foreach (var plane in arplaneCollection)
+        {
+            if (number == Random.Range(0, arplaneCollection.count))
+            {
+                return plane;
+            }
+        }
+
+        return null;
     }
 }
