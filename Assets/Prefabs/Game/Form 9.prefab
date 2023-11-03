@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 959883237369285188}
   m_Layer: 0
   m_Name: Form 9
-  m_TagString: Untagged
+  m_TagString: GameCreatedObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

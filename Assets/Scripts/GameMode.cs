@@ -44,29 +44,34 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
 
     public void TouchInteraction(Touch[] touches)
     {
-        Touch touch = touches[0];
-        bool overUI = touch.position.IsPointOverUIObject();
-        
-        if (touch.phase != TouchPhase.Began || overUI)
-            return;
-        
-        Ray ray = InteractionManager.Instance.ARCamera.ScreenPointToRay(touch.position);
-        RaycastHit hitObject;
-        if (!Physics.Raycast(ray, out hitObject))
-            return;
-
-        if (!hitObject.collider.CompareTag("GameCreatedObject"))
-            return;
-
-        // if we hit a spawned object tag, try to get info from it
-        GameObject selectedObject = hitObject.collider.gameObject;
-        var _selectedObject = selectedObject.GetComponent<GameCreatedObject>();
-        if (!_selectedObject)
-            throw new MissingComponentException("[GAME_MODE] " + selectedObject.name + " has no description!");
-        if (_selectedObject.IsTarget)
+        foreach(var touch in touches)
         {
-            Destroy(selectedObject);
-            score++;
+            Ray ray = InteractionManager.Instance.ARCamera.ScreenPointToRay(touch.position);
+            RaycastHit hitObject;
+            if (!Physics.Raycast(ray, out hitObject))
+            {
+                throw new MissingComponentException("[GAME_MODE] Physics.Raycast!");
+                return;
+            }
+                
+
+            if (!hitObject.collider.CompareTag("GameCreatedObject"))
+            {
+                throw new MissingComponentException("[GAME_MODE] hitObject!");
+                return;
+            }
+
+            // if we hit a spawned object tag, try to get info from it
+            GameObject selectedObject = hitObject.collider.gameObject;
+            var _selectedObject = selectedObject.GetComponent<GameCreatedObject>();
+            if (!_selectedObject)
+                throw new MissingComponentException("[GAME_MODE] " + selectedObject.name + " has no description!");
+            if (_selectedObject.IsTarget)
+            {
+                Destroy(selectedObject);
+                score++;
+            }
+            return;
         }
     }
 
@@ -99,7 +104,7 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
     
     private IEnumerator Tick()
     {
-        while(_currentTime > 0)
+        while(_currentTime > 0 && score < 3)
         {
             TimeDecrease();
             if (_listObject.Count < 13)
@@ -123,20 +128,21 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
         
         var form = gameCreatedObjects[_listObject.Count];
         form.IsUse = true;
-        
+
         var newObject = Instantiate(
-            form.gameObject, 
-            new Vector3(plane.center.x + Random.Range(-plane.size.x, plane.size.x), 
-                plane.center.y + Random.Range(-plane.size.y, plane.size.y), 
-                plane.center.z), 
+            form.gameObject,
+           plane.transform.position, 
             Quaternion.Euler(Random.Range(0, 359), 
                 Random.Range(0, 359), 
                 Random.Range(0, 359)));
-        
+        newObject.transform.SetParent(plane.transform);
+        newObject.transform.position = plane.center;
+
         newObject.AddComponent<ARAnchor>();
 
         _listObject.Add(newObject);
     }
+
 
     private void EndGame()
     {
@@ -165,14 +171,16 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
     private ARPlane GetRandomARPlane()
     {
         var arplaneCollection = _aRPlaneManager.trackables;
-        int number = Random.Range(0, arplaneCollection.count);
-        
+        int scorePlane = 0;
+        int numperPlane = Random.Range(0, arplaneCollection.count);
+
         foreach (var plane in arplaneCollection)
         {
-            if (number == Random.Range(0, arplaneCollection.count))
+            if (scorePlane == numperPlane)
             {
                 return plane;
             }
+            scorePlane++;
         }
 
         return null;
