@@ -136,7 +136,7 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
                 Random.Range(0, 359), 
                 Random.Range(0, 359)));
         newObject.transform.SetParent(plane.transform);
-        newObject.transform.position = plane.center;
+        newObject.transform.position = GetRandomPosition(plane);
 
         newObject.AddComponent<ARAnchor>();
 
@@ -184,5 +184,17 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
         }
 
         return null;
+    }
+    private Vector3 GetRandomPosition(ARPlane plane)
+    {
+        var randomBoundary = Random.Range(0, plane.boundary.Length);
+        var lenghtVector = (plane.centerInPlaneSpace - plane.boundary[randomBoundary]).magnitude;
+
+        var randomPosition = Vector3.zero;
+        randomPosition.x = Random.Range(plane.centerInPlaneSpace.x, plane.centerInPlaneSpace.x + lenghtVector);
+        randomPosition.y = Random.Range(plane.centerInPlaneSpace.y, plane.centerInPlaneSpace.y + lenghtVector);
+        randomPosition.y = plane.transform.position.z;
+
+        return randomPosition;
     }
 }
