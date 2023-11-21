@@ -191,9 +191,9 @@ public class GameMode : MonoBehaviour, IInteractionManagerMode
         var lenghtVector = (plane.centerInPlaneSpace - plane.boundary[randomBoundary]).magnitude;
 
         var randomPosition = Vector3.zero;
-        randomPosition.x = Random.Range(plane.centerInPlaneSpace.x, plane.centerInPlaneSpace.x + lenghtVector);
-        randomPosition.y = Random.Range(plane.centerInPlaneSpace.y, plane.centerInPlaneSpace.y + lenghtVector);
-        randomPosition.y = plane.transform.position.z;
+        randomPosition.x = Random.Range(plane.center.x, plane.center.x + lenghtVector);
+        randomPosition.z = Random.Range(plane.center.z, plane.center.z + lenghtVector);
+        randomPosition.y = plane.transform.position.y;
 
         return randomPosition;
     }
